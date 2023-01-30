@@ -1,6 +1,7 @@
 const chai = require("chai");
 const chaiHttp = require("chai-http");
-let server = require("../../server");
+let server = require("../server");
+
 chai.should();
 chai.use(chaiHttp);
 
@@ -8,7 +9,9 @@ const userLogin = {
   email: "testabhi@gmail.com",
   password: "testingpassword",
 };
+
 let token = "";
+
 const item = {
   item_name: "ChiCKeN",
   quantity: 120,
@@ -30,7 +33,7 @@ const userData = {
 };
 
 describe("Items apis", () => {
-  describe("/POST/ signup", () => {
+  describe("/POST/ signup user", () => {
     it("creating user ", (done) => {
       chai
         .request(server)
@@ -44,7 +47,7 @@ describe("Items apis", () => {
     });
   });
 
-  describe("/POST/ login", () => {
+  describe("/POST/ login user", () => {
     it("login user", (done) => {
       chai
         .request(server)

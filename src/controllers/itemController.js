@@ -5,6 +5,7 @@ const Redis = require("redis");
 const redisClient = Redis.createClient();
 redisClient.connect();
 
+// Adding an item into database
 const addItem = async (req, res) => {
   try {
     const item = await new itemModel(req.body);
@@ -15,19 +16,21 @@ const addItem = async (req, res) => {
           return res.status(400).send({ message: "Duplicate Data sent" });
         }
       } else {
-        res.status(201).send(item);
+        res.status(constant.HTTP_201_CODE).send(item);
       }
     });
   } catch (error) {
-    res.status(500).send(error);
+    res.status(constant.HTTP_500_CODE).send(error);
   }
 };
 
+// returns all the items which are there in database
 const showAll = async (req, res) => {
   const items = await itemModel.find({});
-  res.status(200).send(items);
+  res.status(constant.HTTP_200_CODE).send(items);
 };
 
+// return an item from db which matches the name provided in request param
 const getItem = async (req, res) => {
   const item_name = req.params.name.toLowerCase();
   try {
@@ -46,6 +49,7 @@ const getItem = async (req, res) => {
   }
 };
 
+// update an item in db
 const updateItem = async (req, res) => {
   const item_name = req.params.name.toLowerCase();
   const newItems = {
@@ -77,11 +81,14 @@ const updateItem = async (req, res) => {
   }
 };
 
+// Delete item from db
 const deleteItem = async (req, res) => {
   try {
     const name = req.params.name.toLowerCase();
     await itemModel.deleteOne({ item_name: name });
-    res.send({ message: "Item Deleted succesfully" });
+    res
+      .status(constant.HTTP_200_CODE)
+      .send({ message: "Item Deleted succesfully" });
   } catch (err) {}
 };
 

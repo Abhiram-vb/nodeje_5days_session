@@ -1,13 +1,14 @@
 const userModal = require("../model/userModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { saltRounds } = require(".././config");
-let refreshTokens = [];
+const { saltRounds, constant, expiration_time } = require(".././config");
 const Redis = require("redis");
-const { use } = require("chai");
+
 const redisClient = Redis.createClient();
 redisClient.connect();
+let refreshTokens = [];
 
+// Creating a new user
 const signUp = async (req, res) => {
   try {
     req.body.password = await bcrypt.hashSync(req.body.password, saltRounds);
@@ -17,28 +18,33 @@ const signUp = async (req, res) => {
         if (error.code === 11000) {
           // handle the validation error
           return res
-            .status(400)
+            .status(constant.HTTP_400_CODE)
             .send({ message: "user with same email already exist" });
         }
       } else {
-        res.status(201).send(user);
+        res.status(constant.HTTP_201_CODE).send(user);
       }
     });
   } catch (error) {
-    res.status(500).send(error);
+    res.status(constant.HTTP_500_CODE).send(error);
   }
 };
 
+// Login with email and password. After login accesstoken and refresh token is generated
 const signIn = async (req, res) => {
   const username = req.body.email;
   const password = req.body.password;
   const user = await userModal.findOne({ email: username });
   if (!user) {
-    return res.status(404).send({ message: "user not found" });
+    return res
+      .status(constant.HTTP_401_CODE)
+      .send({ message: "user not found" });
   }
   const match = await bcrypt.compare(password, user.password);
   if (!match) {
-    return res.status(404).send({ message: "username & password not matched" });
+    return res
+      .status(constant.HTTP_401_CODE)
+      .send({ message: "username & password not matched" });
   }
   const token = await jwt.sign(
     { first_name: user.first_name, role: user.role },
@@ -64,15 +70,19 @@ const signIn = async (req, res) => {
     last_name: user.last_name,
     role: user.role,
   };
-  return res.send(data);
+  return res.status(constant.HTTP_200_CODE).send(data);
 };
 
+// Removing the user from database
 const removeUser = async (req, res) => {
   const email = req.body.email;
   await userModal.deleteOne({ email: email });
-  res.send({ message: "user Deleted succesfully" });
+  res
+    .status(constant.HTTP_200_CODE)
+    .send({ message: "User Deleted Succesfully" });
 };
 
+// Creating accesstoken from refreshtoken
 const token = (req, res) => {
   const refreshToken = req.body.token;
   if (refreshToken == null) return res.sendStatus(401);
@@ -83,29 +93,33 @@ const token = (req, res) => {
       { first_name: user.first_name, role: user.role },
       process.env.secret,
       {
-        expiresIn: "1000s",
+        expiresIn: expiration_time,
       }
     );
-    res.json({ accessToken: accessToken });
+    res.status(constant.HTTP_200_CODE).json({ accessToken: accessToken });
   });
 };
 
+// created this method for testing api
 const profile = async (req, res) => {
-  res.send("welcome to this page");
+  res.status(constant.HTTP_200_CODE).send("Welcome to this page");
 };
 
+// removing accesstoken when logout
 const logout = async (req, res) => {
   const authToken = req.headers.authorization;
   const token = authToken.split(" ")[1];
   const user = await userModal.findOneAndUpdate(
     { token: token },
-    { token: "some" },
+    { token: "" },
     {
       new: true,
     }
   );
   user.save();
-  res.status(200).send({ message: "logout" });
+  res
+    .status(constant.HTTP_200_CODE)
+    .send({ message: "Logged out successfully" });
 };
 
 module.exports = {

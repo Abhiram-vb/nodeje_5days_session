@@ -1,6 +1,7 @@
 const chai = require("chai");
 const chaiHttp = require("chai-http");
 let server = require("../server");
+
 chai.should();
 chai.use(chaiHttp);
 
@@ -11,21 +12,24 @@ const userData = {
   password: "testingpassword",
   role: "user",
 };
+
 const userLogin = {
   email: "testabhi@gmail.com",
   password: "testingpassword",
 };
+
 const userWrongEmail = {
   email: "testabhiram@gmail.com",
   password: "testingpassword",
 };
+
 const userWrongPassword = {
   email: "testabhi@gmail.com",
   password: "testingpasswordwrong",
 };
 
 describe("User APIs", () => {
-  describe("SIGNIN/ user", () => {
+  describe("/SIGNIN/ user", () => {
     before("It should create new user", (done) => {
       chai
         .request(server)
@@ -54,7 +58,7 @@ describe("User APIs", () => {
     });
   });
 
-  describe("LOGIN/ user", () => {
+  describe("/LOGIN/ user", () => {
     it("It should login user", (done) => {
       chai
         .request(server)
