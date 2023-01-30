@@ -1,0 +1,6 @@
+response code add
+constants add
+add correct resp code and message
+error handling
+logout
+redis implementation
