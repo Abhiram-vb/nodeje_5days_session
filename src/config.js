@@ -16,4 +16,14 @@ var constant = {
 
 var expiration_time = "10000s";
 
-module.exports = { saltRounds, constant, expiration_time };
+var allDataKey = "allData";
+
+var eachItem = "eachItem";
+
+module.exports = {
+  saltRounds,
+  constant,
+  expiration_time,
+  allDataKey,
+  eachItem,
+};
