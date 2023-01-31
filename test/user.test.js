@@ -10,7 +10,7 @@ const userData = {
   last_name: "test paidimarri",
   email: "testabhi@gmail.com",
   password: "testingpassword",
-  role: "user",
+  role: "admin",
 };
 
 const userLogin = {

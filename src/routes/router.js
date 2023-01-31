@@ -1,5 +1,9 @@
 const express = require("express");
-const { isAuthorized } = require("../middleware/auth");
+const {
+  isAuthorized,
+  verifyUserRole,
+  verifyAdminRole,
+} = require("../middleware/auth");
 
 const Router = express.Router();
 
@@ -28,10 +32,10 @@ Router.get("/profile", isAuthorized, profile);
 Router.delete("/deleteuser", removeUser);
 Router.post("/token", token);
 
-Router.post("/additem", isAuthorized, addItem);
-Router.get("/getallItems", isAuthorized, showAll);
-Router.get("/getItem/:name", isAuthorized, getItem);
-Router.put("/updateItem/:name", isAuthorized, updateItem);
-Router.delete("/deleteItem/:name", isAuthorized, deleteItem);
+Router.post("/additem", [isAuthorized, verifyAdminRole], addItem);
+Router.get("/getallItems", [isAuthorized, verifyUserRole], showAll);
+Router.get("/getItem/:name", [isAuthorized, verifyUserRole], getItem);
+Router.put("/updateItem/:name", [isAuthorized, verifyAdminRole], updateItem);
+Router.delete("/deleteItem/:name", [isAuthorized, verifyAdminRole], deleteItem);
 
 module.exports = Router;

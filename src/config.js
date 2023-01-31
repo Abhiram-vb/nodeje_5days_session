@@ -10,6 +10,8 @@ var constant = {
   HTTP_201_CODE: 201,
   HTTP_200_CODE: 200,
   HTTP_500_CODE: 500,
+  HTTP_498_CODE: 498,
+  HTTP_499_CODE: 499,
 };
 
 var expiration_time = "10000s";
